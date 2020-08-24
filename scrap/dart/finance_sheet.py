@@ -57,24 +57,15 @@ class FinanceSheet():
         dart.set_api_key(api_key=self.dart_key)
 
     def get_corp_list(self):
-        return self.corp_data.get_corp_list()
+        self.corp_data.get_corp_list()
 
-    def get_finance_sheet_excel(self):
-        print("get_finance_sheet_excel")
+    def get_finance_sheet(self, is_excel):
         self.fs = self.corp_data.extract_finance_sheet(self.str_name, self.str_code, True)
         
-        # 재무제표 검색 결과를 엑셀파일로 저장 ( 기본저장위치: 실행폴더/fsdata )
-        self.fs.save()
+        if is_excel == True:
+            self.fs.save()
 
-    def get_finance_sheet_list_dict(self):
-        print("get_finance_sheet_list_dict")
-        self.fs = self.corp_data.extract_finance_sheet(self.str_name, self.str_code, True)
-
-    def get_single_finance_sheet_dict(self):
-        print("get_finance_sheet_dict")
-        self.fs = self.corp_data.extract_finance_sheet(self.str_name, self.str_code, True)
-
-    def update_finance_sheet_all(self, name):
+    def update_finance_sheet_all(self):
         print("update_finance_sheet_all")
         self.update_balance_sheet()
         self.update_income_statement()
@@ -129,14 +120,15 @@ if __name__ == "__main__":
     str_name = '삼성전자'
     str_code = '005930'
 
+    # corp list 가져오기.
     finance_data = FinanceSheet(str_name, str_code)
     finance_data.get_corp_list()
+
     # 단일 종목만 가져오지 못한다.. 무조건 CorpList를 가져온뒤에 CorpList에서 가져오도록 되어있다.
-    # finance_data.get_finance_sheet_dict()
-    finance_data.get_finance_sheet_excel()
-
-    # finance_data.get_single_finance_sheet_dict()
-
-    # finance_data.update_finance_sheet_all('삼성전자')
+    finance_data.get_finance_sheet(False)
+    finance_data.update_finance_sheet_all()
     # finance_data.update_consolidated_income_statement()
+
+    # excel에서 가져오는 방법
+    # finance_data.get_finance_sheet(True)
     
