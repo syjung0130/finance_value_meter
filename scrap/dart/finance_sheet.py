@@ -8,19 +8,11 @@ import dart_fss as dart
 # 패키지 설치는 아래 명령으로
 # pip install dart-fss
 # '''
-class FinanceSheet():
+class CorpData():
     def __init__(self, str_name, str_code):
         print("__init__")
         self.str_name = str_name
         self.str_code = str_code
-
-        with open('info.json') as json_file:
-            self.json_data = json.load(json_file)
-
-        self.dart_key = self.json_data["dart_key"]
-
-        # Open DART API KEY 설정
-        dart.set_api_key(api_key=self.dart_key)
 
     def get_corp_list(self):
         print("get_corp_list")
@@ -31,6 +23,7 @@ class FinanceSheet():
         return self.corp_list.find_by_corp_name(name, exactly=True)[0]
 
     def find_by_stock_code(self, str_code):
+        print("find_by_stock_code")
         self.corp = self.corp_list.find_by_stock_code(str_code)
 
     def extract_finance_sheet(self, str_name, str_code, is_fs_list):
@@ -48,19 +41,38 @@ class FinanceSheet():
         self.fs = self.corp.extract_fs(bgn_de='20170101')
         return self.fs
 
+class FinanceSheet():
+    def __init__(self, str_name, str_code):
+        print("__init__")
+        self.str_name = str_name
+        self.str_code = str_code
+        self.corp_data = CorpData(str_name, str_code)
+
+        with open('info.json') as json_file:
+            self.json_data = json.load(json_file)
+
+        self.dart_key = self.json_data["dart_key"]
+
+        # Open DART API KEY 설정
+        dart.set_api_key(api_key=self.dart_key)
+
+    def get_corp_list(self):
+        return self.corp_data.get_corp_list()
+
     def get_finance_sheet_excel(self):
         print("get_finance_sheet_excel")
-        self.extract_finance_sheet(self.str_name, self.str_code, True)
+        self.fs = self.corp_data.extract_finance_sheet(self.str_name, self.str_code, True)
         
         # 재무제표 검색 결과를 엑셀파일로 저장 ( 기본저장위치: 실행폴더/fsdata )
         self.fs.save()
 
     def get_finance_sheet_list_dict(self):
-        self.extract_finance_sheet(self.str_name, self.str_code, True)
+        print("get_finance_sheet_list_dict")
+        self.fs = self.corp_data.extract_finance_sheet(self.str_name, self.str_code, True)
 
     def get_single_finance_sheet_dict(self):
         print("get_finance_sheet_dict")
-        self.extract_finance_sheet(self.str_name, self.str_code, True)
+        self.fs = self.corp_data.extract_finance_sheet(self.str_name, self.str_code, True)
 
     def update_finance_sheet_all(self, name):
         print("update_finance_sheet_all")
