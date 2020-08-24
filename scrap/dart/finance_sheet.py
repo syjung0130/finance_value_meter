@@ -9,8 +9,11 @@ import dart_fss as dart
 # pip install dart-fss
 # '''
 class FinanceSheet():
-    def __init__(self):
+    def __init__(self, str_name, str_code):
         print("__init__")
+        self.str_name = str_name
+        self.str_code = str_code
+
         with open('info.json') as json_file:
             self.json_data = json.load(json_file)
 
@@ -21,37 +24,50 @@ class FinanceSheet():
 
     def get_corp_list(self):
         print("get_corp_list")
-        return dart.get_corp_list()
+        self.corp_list = dart.get_corp_list()
     
-    def find_by_corp_name(self, name):
-        print("find_by_corp_name")
-        corp_list = self.get_corp_list()
-        return corp_list.find_by_corp_name(name, exactly=True)[0]
+    def find_by_corp_name_from_list(self, name):
+        print("find_by_corp_name_from_list")
+        return self.corp_list.find_by_corp_name(name, exactly=True)[0]
 
-    def get_finance_excel(self, name):
-        print("get_finance_excel")
-        self.extract_finance_sheet(name)
-        
-        # 재무제표 검색 결과를 엑셀파일로 저장 ( 기본저장위치: 실행폴더/fsdata )
-        self.fs.save()
-    
-    def update_finance_sheet(self, name):
-        print("update_finance_sheet")
-        self.extract_finance_sheet(name)
-        
-        self.update_balance_sheet()
-        self.update_income_statement()
-        self.update_consolidated_income_statement()
-        self.update_cash_flow()
-    
-    def extract_finance_sheet(self, name):
+    def find_by_stock_code(self, str_code):
+        self.corp = self.corp_list.find_by_stock_code(str_code)
+
+    def extract_finance_sheet(self, str_name, str_code, is_fs_list):
+        print('extract_finance_sheet')
         # 회사 검색
-        self.corp = self.find_by_corp_name(name)
+        if is_fs_list == True:
+            print("get multi fs from corp_list")
+            self.corp = self.find_by_corp_name_from_list(str_name)
+        else:
+            print("get single fs from corp")
+            self.corp = self.find_by_stock_code(str_code)
         
         # 2017년부터 연간 연결재무제표 불러오기
         # TODO: date 표기법 통일 및 전달인자 처리 필요
         self.fs = self.corp.extract_fs(bgn_de='20170101')
         return self.fs
+
+    def get_finance_sheet_excel(self):
+        print("get_finance_sheet_excel")
+        self.extract_finance_sheet(self.str_name, self.str_code, True)
+        
+        # 재무제표 검색 결과를 엑셀파일로 저장 ( 기본저장위치: 실행폴더/fsdata )
+        self.fs.save()
+
+    def get_finance_sheet_list_dict(self):
+        self.extract_finance_sheet(self.str_name, self.str_code, True)
+
+    def get_single_finance_sheet_dict(self):
+        print("get_finance_sheet_dict")
+        self.extract_finance_sheet(self.str_name, self.str_code, True)
+
+    def update_finance_sheet_all(self, name):
+        print("update_finance_sheet_all")
+        self.update_balance_sheet()
+        self.update_income_statement()
+        self.update_consolidated_income_statement()
+        self.update_cash_flow()
 
     def update_balance_sheet(self):
         print("get_balance_sheet")
@@ -98,5 +114,17 @@ class FinanceSheet():
 
 if __name__ == "__main__":
     # print("check finance data")
-    finance_data = FinanceSheet()
-    finance_data.update_finance_sheet('삼성전자')
+    str_name = '삼성전자'
+    str_code = '005930'
+
+    finance_data = FinanceSheet(str_name, str_code)
+    finance_data.get_corp_list()
+    # 단일 종목만 가져오지 못한다.. 무조건 CorpList를 가져온뒤에 CorpList에서 가져오도록 되어있다.
+    # finance_data.get_finance_sheet_dict()
+    finance_data.get_finance_sheet_excel()
+
+    # finance_data.get_single_finance_sheet_dict()
+
+    # finance_data.update_finance_sheet_all('삼성전자')
+    # finance_data.update_consolidated_income_statement()
+    
