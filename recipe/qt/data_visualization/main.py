@@ -8,7 +8,7 @@ from PyQt5.QtCore import QDateTime, QTimeZone
 from PyQt5.QtWidgets import QApplication
 
 '''
-python .\qt\data_visualization\main_app.py -f .\qt\data_visualization\all_hour.csv
+python .\recipe\qt\data_visualization\main.py -f .\recipe\qt\data_visualization\all_hour.csv
 '''
 
 def transform_date(utc, timezone=None):
