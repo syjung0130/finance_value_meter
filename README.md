@@ -1,4 +1,4 @@
-# valuation_stock
+# kospi_finance_value_analyzer
 
 # 종목 평가
  - 재무제표 데이터를 활용해서 기업의 성장가능성을 확인
