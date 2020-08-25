@@ -8,11 +8,15 @@ import dart_fss as dart
 # 패키지 설치는 아래 명령으로
 # pip install dart-fss
 # '''
-class CorpData():
-    def __init__(self, str_name, str_code):
+# TODO: 회사 리스트를 가져오는데 시간이 제일 많이 소모되므로, singletone으로 구현 필요.
+class DartWrapper():
+    def __init__(self, str_name, str_code, str_key):
         print("__init__")
         self.str_name = str_name
         self.str_code = str_code
+        self.str_key = str_key
+        # Open DART API KEY 설정
+        dart.set_api_key(api_key=self.str_key)
 
     def get_corp_list(self):
         print("get_corp_list")
@@ -41,20 +45,16 @@ class CorpData():
         self.fs = self.corp.extract_fs(bgn_de='20170101')
         return self.fs
 
-class FinanceSheet():
+class FinanceSheetAdapter():
     def __init__(self, str_name, str_code):
         print("__init__")
         self.str_name = str_name
         self.str_code = str_code
-        self.corp_data = CorpData(str_name, str_code)
 
         with open('info.json') as json_file:
             self.json_data = json.load(json_file)
 
-        self.dart_key = self.json_data["dart_key"]
-
-        # Open DART API KEY 설정
-        dart.set_api_key(api_key=self.dart_key)
+        self.corp_data = DartWrapper(str_name, str_code, self.json_data["dart_key"])
 
     def get_corp_list(self):
         self.corp_data.get_corp_list()
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     str_code = '005930'
 
     # corp list 가져오기.
-    finance_data = FinanceSheet(str_name, str_code)
+    finance_data = FinanceSheetAdapter(str_name, str_code)
     finance_data.get_corp_list()
 
     # 단일 종목만 가져오지 못한다.. 무조건 CorpList를 가져온뒤에 CorpList에서 가져오도록 되어있다.
