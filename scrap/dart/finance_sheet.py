@@ -125,10 +125,10 @@ if __name__ == "__main__":
     finance_data.get_corp_list()
 
     # 단일 종목만 가져오지 못한다.. 무조건 CorpList를 가져온뒤에 CorpList에서 가져오도록 되어있다.
-    finance_data.get_finance_sheet(False)
-    finance_data.update_finance_sheet_all()
+    # finance_data.get_finance_sheet(False)
+    # finance_data.update_finance_sheet_all()
     # finance_data.update_consolidated_income_statement()
 
     # excel에서 가져오는 방법
-    # finance_data.get_finance_sheet(True)
+    finance_data.get_finance_sheet(True)
     
