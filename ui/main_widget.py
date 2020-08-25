@@ -5,7 +5,9 @@ from PyQt5.QtWidgets import (QHBoxLayout, QHeaderView, QSizePolicy,
                                 QTableView, QWidget)
 from PyQt5 import QtChart
 from ui.table_model import CustomTableModel
-
+import sys
+from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication, 
+                QVBoxLayout, QDialog)
 '''
 https://stackoverflow.com/questions/58274166/cannot-import-pyqtchart-in-python-3-7
 pyqt5에서 QtChart를 사용하기 위해서는 아래 패키지를 설치해주어야한다.
@@ -31,6 +33,10 @@ class Widget(QWidget):
         self.horizontal_header = self.table_view.horizontalHeader()
         self.vertical_header = self.table_view.verticalHeader()
 
+        # Create Widgets
+        self.edit = QLineEdit("Write my name here")
+        self.button = QPushButton("Show Greetings")
+
         self.horizontal_header.setSectionResizeMode(
                             QHeaderView.ResizeToContents
                             )
@@ -54,7 +60,13 @@ class Widget(QWidget):
         # Left layout
         size.setHorizontalStretch(1)
         self.table_view.setSizePolicy(size)
-        self.main_layout.addWidget(self.table_view)
+        # self.main_layout.addWidget(self.table_view)
+
+        # Create layout and add widgets
+        self.main_layout.addWidget(self.edit)
+        self.main_layout.addWidget(self.button)
+        self.button.clicked.connect(self.greetings)
+
 
         # Right Layout
         size.setHorizontalStretch(4)
@@ -63,6 +75,11 @@ class Widget(QWidget):
 
         # Set the layout to the QWidget
         self.setLayout(self.main_layout)
+        # Add button signal to greeting slot
+        
+    # Greets the user
+    def greetings(self):
+        print("Hello %s" % self.edit.text())
     
     def add_series(self, name, columns):
         # Create QLineSeries
