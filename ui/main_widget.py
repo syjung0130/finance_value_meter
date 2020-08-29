@@ -29,11 +29,11 @@ class Widget(QWidget):
         self.pbar.setValue(0)
         self.status_label.setAlignment(Qt.AlignLeft)
         self.btn_update_codes = QPushButton("종목 코드 리스트 조회")
-        self.btn_finance_sheet = QPushButton("재무 정보 수집")
         self.edit_code = QLineEdit("종목 코드 입력")
+        self.btn_update_fss = QPushButton("재무 정보 수집")
         self.btn_start.clicked.connect(self.start_scrap)
-        self.btn_finance_sheet.clicked.connect(self.update_codes)
         self.btn_update_codes.clicked.connect(self.update_codes)
+        self.btn_update_fss.clicked.connect(self.update_fss)
 
         # Getting the Model - PER, PBR, EPS, ROE를 table로
         # self.model = CustomTableModel(data)
@@ -46,9 +46,9 @@ class Widget(QWidget):
         self.left_inner_layout.addWidget(self.btn_start)
         self.left_inner_layout.addWidget(self.status_label)
         self.left_inner_layout.addWidget(self.pbar)
-        self.left_inner_layout.addWidget(self.edit_code)
         self.left_inner_layout.addWidget(self.btn_update_codes)
-        self.left_inner_layout.addWidget(self.btn_finance_sheet)
+        self.left_inner_layout.addWidget(self.edit_code)
+        self.left_inner_layout.addWidget(self.btn_update_fss)
         self.left_inner_layout.setAlignment(Qt.AlignTop)
         self.grp_box.setLayout(self.left_inner_layout)
 
@@ -97,6 +97,10 @@ class Widget(QWidget):
     def update_codes(self):
         self.stock_code = StockCode()
         self.stock_code.get_stock_codes()
+    
+    def update_fss(self):
+        print("update_fss")
+        # TODO: dataframe을 table 모델로 변환, table view에 출력
 
     def add_series(self, name, columns):
         # Create QLineSeries
