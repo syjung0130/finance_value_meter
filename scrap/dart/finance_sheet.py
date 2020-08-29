@@ -59,7 +59,7 @@ class FinanceSheetAdapter():
     def get_corp_list(self):
         self.corp_data.get_corp_list()
 
-    def get_finance_sheet(self, is_excel):
+    def get_finance_sheet(self, is_excel=False):
         self.fs = self.corp_data.extract_finance_sheet(self.str_name, self.str_code, True)
         
         if is_excel == True:
