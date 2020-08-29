@@ -1,13 +1,11 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QDateTime
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import (QHBoxLayout, QHeaderView, QSizePolicy, 
-                                QTableView, QWidget)
 from PyQt5 import QtChart
-from ui.table_model import CustomTableModel
+from PyQt5.QtWidgets import *
 import sys
-from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication, 
-                QVBoxLayout, QDialog)
+from ui.table_model import CustomTableModel
+
 '''
 https://stackoverflow.com/questions/58274166/cannot-import-pyqtchart-in-python-3-7
 pyqt5에서 QtChart를 사용하기 위해서는 아래 패키지를 설치해주어야한다.
@@ -21,66 +19,63 @@ class Widget(QWidget):
     def __init__(self):
         QWidget.__init__(self)
 
+        self.grpBox = QGroupBox("재무 정보")
+        # Create Widgets
+        self.btnStart = QPushButton("시작")
+        self.statusLabel = QLabel("진행 상태:")
+        self.statusLabel.setAlignment(Qt.AlignLeft)
+        self.editCode = QLineEdit("종목 코드 입력")
+        self.btnFinanceSheet = QPushButton("재무 정보 수집")
+        self.btnStart.clicked.connect(self.start_scrap)
+        self.btnFinanceSheet.clicked.connect(self.getCode)
+
         # Getting the Model
         # self.model = CustomTableModel(data)
         self.model = CustomTableModel()
-
         # Creating a QTableView
         self.table_view = QTableView()
         self.table_view.setModel(self.model)
 
-        # QTableView Headers
-        self.horizontal_header = self.table_view.horizontalHeader()
-        self.vertical_header = self.table_view.verticalHeader()
+        self.leftInnerLayout = QVBoxLayout()
+        self.leftInnerLayout.addWidget(self.btnStart)
+        self.leftInnerLayout.addWidget(self.statusLabel)
+        self.leftInnerLayout.addWidget(self.editCode)
+        self.leftInnerLayout.addWidget(self.btnFinanceSheet)
+        self.leftInnerLayout.setAlignment(Qt.AlignTop)
+        self.grpBox.setLayout(self.leftInnerLayout)
 
-        # Create Widgets
-        self.edit = QLineEdit("Write my name here")
-        self.button = QPushButton("Show Greetings")
+        self.leftLayout = QVBoxLayout()
+        self.leftLayout.addWidget(self.grpBox)
 
-        self.horizontal_header.setSectionResizeMode(
-                            QHeaderView.ResizeToContents
-                            )
-        self.vertical_header.setSectionResizeMode(
-                            QHeaderView.ResizeToContents
-        )
-        self.horizontal_header.setStretchLastSection(True)
-
+        # Right Layout - # Creating QChartView
         self.chart = QtChart.QChart()
         self.chart.setAnimationOptions(QtChart.QChart.AllAnimations)
         self.add_series("Magnitude (Column 1)", [0, 1])
-
-        # Creating QChartView
         self.chart_view = QtChart.QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.Antialiasing)
 
+        # Right Layout
+        self.rightLayout = QVBoxLayout()
+        # size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        # size.setHorizontalStretch(4)
+        # self.chart_view.setSizePolicy(size)
+        self.rightLayout.addWidget(self.chart_view)
+
         # QWidget Layout
         self.main_layout = QHBoxLayout()
-        size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-
-        # Left layout
-        size.setHorizontalStretch(1)
-        self.table_view.setSizePolicy(size)
-        # self.main_layout.addWidget(self.table_view)
-
-        # Create layout and add widgets
-        self.main_layout.addWidget(self.edit)
-        self.main_layout.addWidget(self.button)
-        self.button.clicked.connect(self.greetings)
-
-
-        # Right Layout
-        size.setHorizontalStretch(4)
-        self.chart_view.setSizePolicy(size)
-        self.main_layout.addWidget(self.chart_view)
+        self.main_layout.addLayout(self.leftLayout)
+        self.main_layout.addLayout(self.rightLayout)
 
         # Set the layout to the QWidget
         self.setLayout(self.main_layout)
-        # Add button signal to greeting slot
         
     # Greets the user
-    def greetings(self):
-        print("Hello %s" % self.edit.text())
+    def getCode(self):
+        print("종목 정보 %s" % self.editCode.text())
     
+    def start_scrap(self):
+        print("start scrap")
+
     def add_series(self, name, columns):
         # Create QLineSeries
         self.series = QtChart.QLineSeries()

@@ -5,7 +5,7 @@ from PyQt5.QtGui import QKeySequence
 class MainWindow(QMainWindow):
     def __init__(self, widget):
         QMainWindow.__init__(self)
-        self.setWindowTitle("Earthquakes information")
+        self.setWindowTitle("재무제표")
         self.setCentralWidget(widget)
 
         # Menu
