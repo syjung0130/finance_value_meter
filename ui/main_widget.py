@@ -86,8 +86,6 @@ class Widget(QWidget):
     
     def start_scrap(self):
         print("start scrap")
-        # str_name = '삼성전자'
-        # str_code = '005930'
         str_name = self.str_name
         str_code = self.str_code
         self.pbar.setValue(60)
@@ -116,7 +114,8 @@ class Widget(QWidget):
     
     def update_fss_dart(self):
         print("update_fss_dart")
-        # TODO: dataframe을 table 모델로 변환, table view에 출력
+        # TODO: dart dataframe에서 필요한 부분만 dataframe으로 정제하고,
+        # table_model에 넘겨서 table 모델로 변환, table view에 출력
 
     def add_series(self, name, columns):
         # Create QLineSeries
