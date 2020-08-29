@@ -100,8 +100,10 @@ class FinanceSheetAdapter():
         self.labels_ci = self.fs.labels['cis']
         print("===== 연결 포괄 손익 계산서 =====")
         print(type(self.df_ci))
-        print(self.df_ci)
+        print('labels: ')
         print(self.labels_ci)
+        print('data frames: ')
+        print(self.df_ci)
     
     def update_cash_flow(self):
         # 현금흐름표(Cash Flow)

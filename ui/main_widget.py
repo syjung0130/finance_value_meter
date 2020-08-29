@@ -91,7 +91,8 @@ class Widget(QWidget):
         self.pbar.setValue(60)
         self.finance_sheet.get_finance_sheet()
         self.pbar.setValue(80)
-        self.finance_sheet.update_finance_sheet_all()
+        # self.finance_sheet.update_finance_sheet_all()
+        self.finance_sheet.update_consolidated_income_statement()
         self.pbar.setValue(100)
 
     def update_codes(self):
