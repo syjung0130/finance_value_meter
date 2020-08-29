@@ -5,6 +5,8 @@ from PyQt5 import QtChart
 from PyQt5.QtWidgets import *
 import sys
 from ui.table_model import CustomTableModel
+from scrap.dart.finance_sheet import FinanceSheetAdapter
+from scrap.krx.stock_code import StockCode
 
 '''
 https://stackoverflow.com/questions/58274166/cannot-import-pyqtchart-in-python-3-7
@@ -21,13 +23,15 @@ class Widget(QWidget):
 
         self.grp_box = QGroupBox("재무 정보")
         # Create Widgets
-        self.btn_start = QPushButton("시작")
+        self.btn_start = QPushButton("dart api 초기화")
         self.status_label = QLabel("진행 상태:")
         self.status_label.setAlignment(Qt.AlignLeft)
+        self.btn_update_codes = QPushButton("종목 코드 리스트 조회")
         self.edit_code = QLineEdit("종목 코드 입력")
         self.btn_finance_sheet = QPushButton("재무 정보 수집")
         self.btn_start.clicked.connect(self.start_scrap)
-        self.btn_finance_sheet.clicked.connect(self.get_code)
+        self.btn_finance_sheet.clicked.connect(self.get_code_text)
+        self.btn_update_codes.clicked.connect(self.update_codes)
 
         # Getting the Model - PER, PBR, EPS, ROE를 table로
         # self.model = CustomTableModel(data)
@@ -41,6 +45,7 @@ class Widget(QWidget):
         self.left_inner_layout.addWidget(self.status_label)
         self.left_inner_layout.addWidget(self.edit_code)
         self.left_inner_layout.addWidget(self.btn_finance_sheet)
+        self.left_inner_layout.addWidget(self.btn_update_codes)
         self.left_inner_layout.setAlignment(Qt.AlignTop)
         self.grp_box.setLayout(self.left_inner_layout)
 
@@ -70,11 +75,27 @@ class Widget(QWidget):
         self.setLayout(self.main_layout)
         
     # Greets the user
-    def get_code(self):
+    def get_code_text(self):
         print("종목 정보 %s" % self.edit_code.text())
     
     def start_scrap(self):
         print("start scrap")
+        str_name = '삼성전자'
+        str_code = '005930'
+        self.finance_sheet = FinanceSheetAdapter(str_name, str_code)
+        self.finance_sheet.get_corp_list()
+        self.status_label.setText("회사 리스트 다운로드 중...")
+        self.status_label.update()
+        self.finance_sheet.get_finance_sheet()
+        self.status_label.setText("재무 정보 저장 중...")
+        self.status_label.update()
+        self.finance_sheet.update_finance_sheet_all()
+        self.status_label.setText("완료!")
+        self.status_label.update()
+
+    def update_codes(self):
+        self.stock_code = StockCode()
+        self.stock_code.get_code_text_list()
 
     def add_series(self, name, columns):
         # Create QLineSeries
