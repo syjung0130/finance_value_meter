@@ -33,7 +33,7 @@ class Widget(QWidget):
         self.status_label.setAlignment(Qt.AlignLeft)
         self.btn_update_fss_dart = QPushButton("재무 정보 수집")
         self.edit_corp_name.returnPressed.connect(self.update_codes)
-        self.btn_start.clicked.connect(self.start_scrap)
+        self.btn_start.clicked.connect(self.init_fss_dart)
         self.btn_update_fss_dart.clicked.connect(self.update_fss_dart)
 
 
@@ -84,18 +84,16 @@ class Widget(QWidget):
     def get_code_text(self):
         print("종목 정보 %s" % self.edit_corp_name.text())
     
-    def start_scrap(self):
-        print("start scrap")
+    def init_fss_dart(self):
+        print("init_fss_dart")
         str_name = self.str_name
         str_code = self.str_code
-        self.pbar.setValue(60)
+        self.pbar.setValue(0)
         self.finance_sheet = FinanceSheetAdapter(str_name, str_code)
+        self.pbar.setValue(30)
         self.finance_sheet.get_corp_list()
         self.pbar.setValue(60)
         self.finance_sheet.get_finance_sheet()
-        self.pbar.setValue(80)
-        # self.finance_sheet.update_finance_sheet_all()
-        self.finance_sheet.update_consolidated_income_statement()
         self.pbar.setValue(100)
 
     def update_codes(self):
@@ -114,6 +112,8 @@ class Widget(QWidget):
     
     def update_fss_dart(self):
         print("update_fss_dart")
+        # self.finance_sheet.update_finance_sheet_all()
+        self.finance_sheet.update_consolidated_income_statement()
         # TODO: dart dataframe에서 필요한 부분만 dataframe으로 정제하고,
         # table_model에 넘겨서 table 모델로 변환, table view에 출력
 
