@@ -23,17 +23,19 @@ class Widget(QWidget):
 
         self.grp_box = QGroupBox("재무 정보")
         # Create Widgets
+        self.label_stock_code_search = QLabel("종목 코드 조회:")
+        self.edit_corp_name = QLineEdit("회사명을 입력하고 엔터를 입력하세요.")
+        self.edit_corp_code = QLineEdit("종목 코드:")
         self.btn_start = QPushButton("dart api 초기화")
         self.status_label = QLabel("진행 상태:")
         self.pbar = QProgressBar(self)
         self.pbar.setValue(0)
         self.status_label.setAlignment(Qt.AlignLeft)
-        self.btn_update_codes = QPushButton("종목 코드 리스트 조회")
-        self.edit_code = QLineEdit("종목 코드 입력")
-        self.btn_update_fss = QPushButton("재무 정보 수집")
+        self.btn_update_fss_dart = QPushButton("재무 정보 수집")
+        self.edit_corp_name.returnPressed.connect(self.update_codes)
         self.btn_start.clicked.connect(self.start_scrap)
-        self.btn_update_codes.clicked.connect(self.update_codes)
-        self.btn_update_fss.clicked.connect(self.update_fss)
+        self.btn_update_fss_dart.clicked.connect(self.update_fss_dart)
+
 
         # Getting the Model - PER, PBR, EPS, ROE를 table로
         # self.model = CustomTableModel(data)
@@ -43,12 +45,13 @@ class Widget(QWidget):
         self.table_view.setModel(self.model)
 
         self.left_inner_layout = QVBoxLayout()
+        self.left_inner_layout.addWidget(self.label_stock_code_search)
+        self.left_inner_layout.addWidget(self.edit_corp_name)
+        self.left_inner_layout.addWidget(self.edit_corp_code)
         self.left_inner_layout.addWidget(self.btn_start)
         self.left_inner_layout.addWidget(self.status_label)
         self.left_inner_layout.addWidget(self.pbar)
-        self.left_inner_layout.addWidget(self.btn_update_codes)
-        self.left_inner_layout.addWidget(self.edit_code)
-        self.left_inner_layout.addWidget(self.btn_update_fss)
+        self.left_inner_layout.addWidget(self.btn_update_fss_dart)
         self.left_inner_layout.setAlignment(Qt.AlignTop)
         self.grp_box.setLayout(self.left_inner_layout)
 
@@ -79,12 +82,14 @@ class Widget(QWidget):
         
     # Greets the user
     def get_code_text(self):
-        print("종목 정보 %s" % self.edit_code.text())
+        print("종목 정보 %s" % self.edit_corp_name.text())
     
     def start_scrap(self):
         print("start scrap")
-        str_name = '삼성전자'
-        str_code = '005930'
+        # str_name = '삼성전자'
+        # str_code = '005930'
+        str_name = self.str_name
+        str_code = self.str_code
         self.pbar.setValue(60)
         self.finance_sheet = FinanceSheetAdapter(str_name, str_code)
         self.finance_sheet.get_corp_list()
@@ -97,10 +102,20 @@ class Widget(QWidget):
 
     def update_codes(self):
         self.stock_code = StockCode()
-        self.stock_code.get_stock_codes()
+        self.stock_code.update_stock_codes()
+        try:
+            self.str_name = self.edit_corp_name.text()
+            code = self.stock_code.get_stock_code_by_name(self.str_name)#edit_corp_name
+            print("stock_code : {}".format(code))
+            self.str_code = '%06d'%code
+            self.edit_corp_code.setText(self.str_code)
+            
+        except ValueError:
+            print("invalid corp name: {}".format(self.edit_corp_name.text()))
+            self.edit_corp_code.setText("잘못된 회사명입니다.")
     
-    def update_fss(self):
-        print("update_fss")
+    def update_fss_dart(self):
+        print("update_fss_dart")
         # TODO: dataframe을 table 모델로 변환, table view에 출력
 
     def add_series(self, name, columns):
