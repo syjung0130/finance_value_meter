@@ -25,12 +25,14 @@ class Widget(QWidget):
         # Create Widgets
         self.btn_start = QPushButton("dart api 초기화")
         self.status_label = QLabel("진행 상태:")
+        self.pbar = QProgressBar(self)
+        self.pbar.setValue(0)
         self.status_label.setAlignment(Qt.AlignLeft)
         self.btn_update_codes = QPushButton("종목 코드 리스트 조회")
-        self.edit_code = QLineEdit("종목 코드 입력")
         self.btn_finance_sheet = QPushButton("재무 정보 수집")
+        self.edit_code = QLineEdit("종목 코드 입력")
         self.btn_start.clicked.connect(self.start_scrap)
-        self.btn_finance_sheet.clicked.connect(self.get_code_text)
+        self.btn_finance_sheet.clicked.connect(self.update_codes)
         self.btn_update_codes.clicked.connect(self.update_codes)
 
         # Getting the Model - PER, PBR, EPS, ROE를 table로
@@ -43,9 +45,10 @@ class Widget(QWidget):
         self.left_inner_layout = QVBoxLayout()
         self.left_inner_layout.addWidget(self.btn_start)
         self.left_inner_layout.addWidget(self.status_label)
+        self.left_inner_layout.addWidget(self.pbar)
         self.left_inner_layout.addWidget(self.edit_code)
-        self.left_inner_layout.addWidget(self.btn_finance_sheet)
         self.left_inner_layout.addWidget(self.btn_update_codes)
+        self.left_inner_layout.addWidget(self.btn_finance_sheet)
         self.left_inner_layout.setAlignment(Qt.AlignTop)
         self.grp_box.setLayout(self.left_inner_layout)
 
@@ -82,20 +85,18 @@ class Widget(QWidget):
         print("start scrap")
         str_name = '삼성전자'
         str_code = '005930'
+        self.pbar.setValue(60)
         self.finance_sheet = FinanceSheetAdapter(str_name, str_code)
         self.finance_sheet.get_corp_list()
-        self.status_label.setText("회사 리스트 다운로드 중...")
-        self.status_label.update()
+        self.pbar.setValue(60)
         self.finance_sheet.get_finance_sheet()
-        self.status_label.setText("재무 정보 저장 중...")
-        self.status_label.update()
+        self.pbar.setValue(80)
         self.finance_sheet.update_finance_sheet_all()
-        self.status_label.setText("완료!")
-        self.status_label.update()
+        self.pbar.setValue(100)
 
     def update_codes(self):
         self.stock_code = StockCode()
-        self.stock_code.get_code_text_list()
+        self.stock_code.get_stock_codes()
 
     def add_series(self, name, columns):
         # Create QLineSeries
