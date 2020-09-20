@@ -1,4 +1,6 @@
 from selenium import webdriver
+import pandas as pd
+import time
 
 '''
  # chrome 버전 정보 확인: chrome://version
@@ -13,3 +15,8 @@ driver.implicitly_wait(10)
 
 span = driver.find_elements_by_css_selector('span.button-mdi-group button')[3]
 span.click()
+
+time.sleep(3)
+file_path = 'C:/Users/SYJ/Downloads/data.csv'
+data_frame = pd.read_csv(file_path)
+print(data_frame)
