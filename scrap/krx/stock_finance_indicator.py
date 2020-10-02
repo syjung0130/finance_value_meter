@@ -22,14 +22,12 @@ class StockFinanceIndicator:
         print("PER, PBR, EPS, BPS excel sheet 다운로드")
         # download한 파일이름에 날짜를 붙여서 저장
         # 현재 날짜가 지난 날짜일 경우, 새로 download
-        
-        self.open_chrome_driver()
-
         self.download_path = 'C:/Users/SYJ/Downloads/'#'C:/Users/SYJ/Downloads/data.csv'
         self.download_file_name = 'data.csv'
 
         # 업데이트하지 않아도 될 경우, download하지 않는다.
         if self.is_excel_file_already_update() == False:
+            self.open_chrome_driver()
             self.do_download_excel()
             os.rename(self.download_path + self.download_file_name, self.download_path + self.excel_file_name)
         else:
