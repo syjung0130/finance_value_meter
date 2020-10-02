@@ -7,6 +7,7 @@ import sys
 from ui.table_model import CustomTableModel
 from scrap.dart.finance_sheet import FinanceSheetAdapter
 from scrap.krx.stock_code import StockCode
+from scrap.krx.stock_finance_indicator import StockFinanceIndicator
 
 '''
 https://stackoverflow.com/questions/58274166/cannot-import-pyqtchart-in-python-3-7
@@ -26,37 +27,44 @@ class Widget(QWidget):
         self.label_stock_code_search = QLabel("종목 코드 조회:")
         self.edit_corp_name = QLineEdit("회사명을 입력하고 엔터를 입력하세요.")
         self.edit_corp_code = QLineEdit("종목 코드:")
-        self.btn_start = QPushButton("dart api 초기화")
-        self.status_label = QLabel("진행 상태:")
-        self.pbar = QProgressBar(self)
-        self.pbar.setValue(0)
-        self.status_label.setAlignment(Qt.AlignLeft)
-        self.btn_update_fss_dart = QPushButton("재무 정보 수집")
         self.edit_corp_name.returnPressed.connect(self.update_codes)
-        self.btn_start.clicked.connect(self.init_fss_dart)
-        self.btn_update_fss_dart.clicked.connect(self.update_fss_dart)
-
 
         # Getting the Model - PER, PBR, EPS, ROE를 table로
-        # self.model = CustomTableModel(data)
-        self.model = CustomTableModel()
+        indicator = StockFinanceIndicator()
+        dataframe = indicator.get_finance_dataframe_by_code("005930")
+        self.model = CustomTableModel(dataframe)
+        # self.model = CustomTableModel()
         # Creating a QTableView
         self.table_view = QTableView()
         self.table_view.setModel(self.model)
+        # QTableView Headers
+        self.horizontal_header = self.table_view.horizontalHeader()
+        self.vertical_header = self.table_view.verticalHeader()
+        self.horizontal_header.setSectionResizeMode(
+                            QHeaderView.ResizeToContents
+                            )
+        self.vertical_header.setSectionResizeMode(
+                            QHeaderView.ResizeToContents
+        )
+        self.horizontal_header.setStretchLastSection(True)
+        size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
+        # Left layout
+        size.setHorizontalStretch(1)
+        self.table_view.setSizePolicy(size)
+        # self.main_layout.addWidget(self.table_view)
+
 
         self.left_inner_layout = QVBoxLayout()
         self.left_inner_layout.addWidget(self.label_stock_code_search)
         self.left_inner_layout.addWidget(self.edit_corp_name)
         self.left_inner_layout.addWidget(self.edit_corp_code)
-        self.left_inner_layout.addWidget(self.btn_start)
-        self.left_inner_layout.addWidget(self.status_label)
-        self.left_inner_layout.addWidget(self.pbar)
-        self.left_inner_layout.addWidget(self.btn_update_fss_dart)
         self.left_inner_layout.setAlignment(Qt.AlignTop)
         self.grp_box.setLayout(self.left_inner_layout)
 
         self.left_layout = QVBoxLayout()
         self.left_layout.addWidget(self.grp_box)
+        self.left_layout.addWidget(self.table_view)
 
         # Right Layout - # Creating QChartView: 매출액, 순이익, 자산 증가 추세
         self.chart = QtChart.QChart()
@@ -83,18 +91,6 @@ class Widget(QWidget):
     # Greets the user
     def get_code_text(self):
         print("종목 정보 %s" % self.edit_corp_name.text())
-    
-    def init_fss_dart(self):
-        print("init_fss_dart")
-        str_name = self.str_name
-        str_code = self.str_code
-        self.pbar.setValue(0)
-        self.finance_sheet = FinanceSheetAdapter(str_name, str_code)
-        self.pbar.setValue(30)
-        self.finance_sheet.get_corp_list()
-        self.pbar.setValue(60)
-        self.finance_sheet.get_finance_sheet()
-        self.pbar.setValue(100)
 
     def update_codes(self):
         self.stock_code = StockCode()
@@ -110,13 +106,6 @@ class Widget(QWidget):
             print("invalid corp name: {}".format(self.edit_corp_name.text()))
             self.edit_corp_code.setText("잘못된 회사명입니다.")
     
-    def update_fss_dart(self):
-        print("update_fss_dart")
-        # self.finance_sheet.update_finance_sheet_all()
-        self.finance_sheet.update_consolidated_income_statement()
-        # TODO: dart dataframe에서 필요한 부분만 dataframe으로 정제하고,
-        # table_model에 넘겨서 table 모델로 변환, table view에 출력
-
     def add_series(self, name, columns):
         # Create QLineSeries
         self.series = QtChart.QLineSeries()
