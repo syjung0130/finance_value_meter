@@ -23,38 +23,11 @@ class Widget(QWidget):
         QWidget.__init__(self)
 
         self.grp_box = QGroupBox("재무 정보")
-        # Create Widgets
-        self.label_stock_code_search = QLabel("종목 코드 조회:")
-        self.edit_corp_name = QLineEdit("회사명을 입력하고 엔터를 입력하세요.")
-        self.edit_corp_code = QLineEdit("종목 코드:")
-        self.edit_corp_name.returnPressed.connect(self.update_codes)
-
-        # Getting the Model - PER, PBR, EPS, ROE를 table로
-        indicator = StockFinanceIndicator()
-        dataframe = indicator.get_finance_dataframe_by_code("005930")
-        self.model = CustomTableModel(dataframe)
-        # self.model = CustomTableModel()
-        # Creating a QTableView
-        self.table_view = QTableView()
-        self.table_view.setModel(self.model)
-        # QTableView Headers
-        self.horizontal_header = self.table_view.horizontalHeader()
-        self.vertical_header = self.table_view.verticalHeader()
-        self.horizontal_header.setSectionResizeMode(
-                            QHeaderView.ResizeToContents
-                            )
-        self.vertical_header.setSectionResizeMode(
-                            QHeaderView.ResizeToContents
-        )
-        self.horizontal_header.setStretchLastSection(True)
-        size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.create_widgets()
+        self.create_finance_table_model()
 
         # Left layout
-        size.setHorizontalStretch(1)
-        self.table_view.setSizePolicy(size)
-        # self.main_layout.addWidget(self.table_view)
-
-
+        self.create_table_view()
         self.left_inner_layout = QVBoxLayout()
         self.left_inner_layout.addWidget(self.label_stock_code_search)
         self.left_inner_layout.addWidget(self.edit_corp_name)
@@ -73,7 +46,7 @@ class Widget(QWidget):
         self.chart_view = QtChart.QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.Antialiasing)
 
-        # Right Layout
+        # Right Layout - Add charg widget
         self.right_layout = QVBoxLayout()
         # size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         # size.setHorizontalStretch(4)
@@ -87,7 +60,43 @@ class Widget(QWidget):
 
         # Set the layout to the QWidget
         self.setLayout(self.main_layout)
-        
+    
+    def create_widgets(self):
+        # Create Widgets
+        self.label_stock_code_search = QLabel("종목 코드 조회:")
+        self.edit_corp_name = QLineEdit("회사명을 입력하고 엔터를 입력하세요.")
+        self.edit_corp_code = QLineEdit("종목 코드:")
+        self.edit_corp_name.returnPressed.connect(self.update_codes)
+    
+    def create_finance_table_model(self):
+        # Getting the Model - PER, PBR, EPS, ROE를 table로
+        indicator = StockFinanceIndicator()
+        dataframe = indicator.get_finance_dataframe_by_code("005930")
+        self.model = CustomTableModel(dataframe)
+        # self.model = CustomTableModel()
+    
+    def create_table_view(self):
+        # Creating a QTableView
+        self.table_view = QTableView()
+        self.table_view.setModel(self.model)
+        self.init_table_headers()
+        self.size.setHorizontalStretch(1)
+        self.table_view.setSizePolicy(self.size)
+        # self.main_layout.addWidget(self.table_view)
+    
+    def init_table_headers(self):
+        # QTableView Headers
+        self.horizontal_header = self.table_view.horizontalHeader()
+        self.vertical_header = self.table_view.verticalHeader()
+        self.horizontal_header.setSectionResizeMode(
+                            QHeaderView.ResizeToContents
+                            )
+        self.vertical_header.setSectionResizeMode(
+                            QHeaderView.ResizeToContents
+        )
+        self.horizontal_header.setStretchLastSection(True)
+        self.size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
     # Greets the user
     def get_code_text(self):
         print("종목 정보 %s" % self.edit_corp_name.text())
