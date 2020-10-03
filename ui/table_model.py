@@ -8,7 +8,7 @@ class CustomTableModel(QAbstractTableModel):
     def __init__(self, data=None):
         QAbstractTableModel.__init__(self)
         self.load_data(data)
-    
+
     def load_data(self, data):
         print('load_data')
         # print(data)
@@ -19,6 +19,13 @@ class CustomTableModel(QAbstractTableModel):
         self.row_count = data.shape[0]
         self.column_count = data.shape[1]
         self.columns_list = list(data.columns.values)
+
+    # https://stackoverflow.com/questions/45359569/how-to-update-qtableview-on-qabstracttablemodel-change
+    def update_data(self, data):
+        self.df = data
+        for i in range(self.row_count):
+            for j in range(self.column_count):
+                self.dataChanged.emit(self.index(i, j), self.index(i, j))
 
     def rowCount(self, parent=QModelIndex()):
         return self.row_count

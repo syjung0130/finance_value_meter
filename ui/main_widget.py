@@ -70,10 +70,9 @@ class Widget(QWidget):
     
     def create_finance_table_model(self):
         # Getting the Model - PER, PBR, EPS, ROE를 table로
-        indicator = StockFinanceIndicator()
-        dataframe = indicator.get_finance_dataframe_by_code("005930")
+        self.indicator = StockFinanceIndicator()
+        dataframe = self.indicator.get_finance_dataframe_by_code("005930")
         self.model = CustomTableModel(dataframe)
-        # self.model = CustomTableModel()
     
     def create_table_view(self):
         # Creating a QTableView
@@ -110,6 +109,8 @@ class Widget(QWidget):
             print("stock_code : {}".format(code))
             self.str_code = '%06d'%code
             self.edit_corp_code.setText(self.str_code)
+            dataframe = self.indicator.get_finance_dataframe_by_code(self.str_code)
+            self.model.update_data(dataframe)
             
         except ValueError:
             print("invalid corp name: {}".format(self.edit_corp_name.text()))
