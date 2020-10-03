@@ -77,8 +77,25 @@ class StockFinanceIndicator:
         # ROE를 계산 후 새로운 data frame으로 생성
         # 생성된 data frame을 return
         data_frame = self.entire_data_frame[self.entire_data_frame['종목코드'] == str_code]
-        return data_frame.drop(['관리여부', '배당수익률', '게시물  일련번호', '총카운트'], axis=1)
-    
+        print(type(data_frame))
+        data_frame = data_frame.drop(['관리여부', '배당수익률', '게시물  일련번호', '총카운트'], axis=1)
+        data_frame = self.add_roe_column(data_frame)
+        return data_frame
+
+    def add_roe_column(self, data_frame):
+        str_eps = data_frame['EPS'].iloc[0]
+        str_eps = str_eps.replace(',', '')
+        str_bps = data_frame['BPS'].iloc[0]
+        str_bps = str_bps.replace(',', '')
+        print('str eps: {0}, bps: {1}'.format(str_eps, str_bps))
+        print(type(str_eps))
+        print(type(str_bps))
+        eps = float(str_eps)
+        bps = float(str_bps)
+        roe = float((eps / bps) *100)
+        data_frame['ROE'] = format(roe, '3.2f')
+        return data_frame
+
     def get_dataframe_by_name(self, str_name):
         print("get data frame by name")
         data_frame = self.entire_data_frame[self.entire_data_frame['종목명'] == '삼성전자']
