@@ -25,9 +25,11 @@ class Widget(QWidget):
         self.grp_box = QGroupBox("재무 정보")
         self.create_widgets()
         self.create_finance_table_model()
+        self.create_valuation_table_model()
 
         # Left layout
-        self.create_table_view()
+        self.create_finance_table_view()
+        self.create_valuation_table_view()
         self.left_inner_layout = QVBoxLayout()
         self.left_inner_layout.addWidget(self.label_stock_code_search)
         self.left_inner_layout.addWidget(self.edit_corp_name)
@@ -37,7 +39,7 @@ class Widget(QWidget):
 
         self.left_layout = QVBoxLayout()
         self.left_layout.addWidget(self.grp_box)
-        self.left_layout.addWidget(self.table_view)
+        self.left_layout.addWidget(self.finance_table_view)
 
         # Right Layout - # Creating QChartView: 매출액, 순이익, 자산 증가 추세
         self.chart = QtChart.QChart()
@@ -72,21 +74,21 @@ class Widget(QWidget):
         # Getting the Model - PER, PBR, EPS, ROE를 table로
         self.indicator = StockFinanceIndicator()
         dataframe = self.indicator.get_finance_dataframe_by_code("005930")
-        self.model = CustomTableModel(dataframe)
+        self.finance_table_model = CustomTableModel(dataframe)
     
-    def create_table_view(self):
+    def create_finance_table_view(self):
         # Creating a QTableView
-        self.table_view = QTableView()
-        self.table_view.setModel(self.model)
+        self.finance_table_view = QTableView()
+        self.finance_table_view.setModel(self.finance_table_model)
         self.init_table_headers()
         self.size.setHorizontalStretch(1)
-        self.table_view.setSizePolicy(self.size)
-        # self.main_layout.addWidget(self.table_view)
+        self.finance_table_view.setSizePolicy(self.size)
+        # self.main_layout.addWidget(self.finance_table_view)
     
     def init_table_headers(self):
         # QTableView Headers
-        self.horizontal_header = self.table_view.horizontalHeader()
-        self.vertical_header = self.table_view.verticalHeader()
+        self.horizontal_header = self.finance_table_view.horizontalHeader()
+        self.vertical_header = self.finance_table_view.verticalHeader()
         self.horizontal_header.setSectionResizeMode(
                             QHeaderView.ResizeToContents
                             )
@@ -96,6 +98,12 @@ class Widget(QWidget):
         self.horizontal_header.setStretchLastSection(True)
         self.size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
 
+    def create_valuation_table_model(self):
+        print('create_valuation_table_model')
+
+    def create_valuation_table_view(self):
+        print('create_valuation_table_view')
+    
     # Greets the user
     def get_code_text(self):
         print("종목 정보 %s" % self.edit_corp_name.text())
@@ -110,7 +118,7 @@ class Widget(QWidget):
             self.str_code = '%06d'%code
             self.edit_corp_code.setText(self.str_code)
             dataframe = self.indicator.get_finance_dataframe_by_code(self.str_code)
-            self.model.update_data(dataframe)
+            self.finance_table_model.update_data(dataframe)
             
         except ValueError:
             print("invalid corp name: {}".format(self.edit_corp_name.text()))
@@ -122,12 +130,12 @@ class Widget(QWidget):
         self.series.setName(name)
 
         # Filling QLineSeries
-        for i in range(self.model.rowCount()):
+        for i in range(self.finance_table_model.rowCount()):
             # Getting the data
-            t = self.model.index(i, 0).data()
+            t = self.finance_table_model.index(i, 0).data()
 
-            x = self.model.index(i, 0).data()
-            y = self.model.index(i, 1).data()
+            x = self.finance_table_model.index(i, 0).data()
+            y = self.finance_table_model.index(i, 1).data()
 
             self.series.append(0, 0)
             
@@ -150,4 +158,4 @@ class Widget(QWidget):
         self.series.attachAxis(self.axis_y)
 
         # Getting the color from QChart to use it on the QTableView
-        self.model.color = "{}".format(self.series.pen().color().name())
+        self.finance_table_model.color = "{}".format(self.series.pen().color().name())
