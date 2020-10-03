@@ -77,8 +77,7 @@ class StockFinanceIndicator:
         # ROE를 계산 후 새로운 data frame으로 생성
         # 생성된 data frame을 return
         data_frame = self.entire_data_frame[self.entire_data_frame['종목코드'] == str_code]
-        print(data_frame)
-        return data_frame
+        return data_frame.drop(['관리여부', '배당수익률', '게시물  일련번호', '총카운트'], axis=1)
     
     def get_dataframe_by_name(self, str_name):
         print("get data frame by name")

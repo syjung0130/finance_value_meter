@@ -115,13 +115,11 @@ class Widget(QWidget):
         for i in range(self.model.rowCount()):
             # Getting the data
             t = self.model.index(i, 0).data()
-            date_fmt = "yyyy-MM-dd HH:mm:ss.zzz"
 
-            x = QDateTime().fromString(t, date_fmt).toSecsSinceEpoch()
-            y = float(self.model.index(i, 1).data())
+            x = self.model.index(i, 0).data()
+            y = self.model.index(i, 1).data()
 
-            if x > 0 and y >0:
-                self.series.append(x, y)
+            self.series.append(0, 0)
             
         self.chart.addSeries(self.series)
 

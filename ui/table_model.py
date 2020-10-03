@@ -1,23 +1,24 @@
 from PyQt5.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PyQt5.QtGui import QColor
+import pandas as pd
+
+# https://stackoverflow.com/questions/17697352/pyqt-implement-a-qabstracttablemodel-for-display-in-qtableview
 
 class CustomTableModel(QAbstractTableModel):
     def __init__(self, data=None):
         QAbstractTableModel.__init__(self)
         self.load_data(data)
-
+    
     def load_data(self, data):
-        # self.input_dates = data[0].values
-        # self.input_magnitudes = data[1].values
-
-        # self.column_count = 2
-        # self.row_count = len(self.input_magnitudes)
-        self.input_dates = 999999
-        self.input_magnitudes = 999999
-
-        self.column_count = 0
-        self.row_count = 0
-
+        print('load_data')
+        # print(data)
+        # print(data.shape)
+        # print('row, col: ({0}, {1})'.format(data.shape[0], data.shape[1]))
+        # print("columns: {}".format(list(data.columns.values)))
+        self.df = data
+        self.row_count = data.shape[0]
+        self.column_count = data.shape[1]
+        self.columns_list = list(data.columns.values)
 
     def rowCount(self, parent=QModelIndex()):
         return self.row_count
@@ -29,22 +30,16 @@ class CustomTableModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return None
         if orientation == Qt.Horizontal:
-            return("Date", "Magnitude")[section]
+            return self.columns_list[section]
         else:
             return "{}".format(section)
     
     def data(self, index, role=Qt.DisplayRole):
-        column = index.column()
         row = index.row()
+        column = index.column()
 
         if role == Qt.DisplayRole:
-            if column == 0:
-                raw_date = self.input_dates[row]
-                # date = "{}".format(raw_date.toPython())#PyQt4
-                date = "{}".format(raw_date.toPyDateTime())
-                return date[:-3]
-            elif column == 1:
-                return "{:.2f}".format(self.input_magnitudes[row])
+            return self.df.iloc[row][column]
         elif role == Qt.BackgroundColorRole:
             return QColor(Qt.white)
         elif role == Qt.TextAlignmentRole:
