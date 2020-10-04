@@ -153,9 +153,9 @@ class Widget(QWidget):
         self.eps = float(str_eps)
         self.bps = float(str_bps)
         self.roe = float((self.eps /  self.bps) *100)
-        self.appropriate_eps = format((self.bps * self.roe)/100, '3.2f')#str(self.bps * self.roe)
-        self.appropriate_cost_by_eps = format((self.eps * self.roe), '3.2f')#str(self.eps * self.roe)
-        self.appropriate_cost_by_bps = format((self.bps * self.roe * self.roe)/100, '3.2f')#str(self.bps * self.roe * self.roe)
+        self.appropriate_eps = format(int((self.bps * self.roe)/100), '10d')#str(self.bps * self.roe)
+        self.appropriate_cost_by_eps = format(int((self.eps * self.roe)), '10d')#str(self.eps * self.roe)
+        self.appropriate_cost_by_bps = format(int((self.bps * self.roe * self.roe)/100), '10d')#str(self.bps * self.roe * self.roe)
         self.dict_valuation = { '적정 EPS': [self.appropriate_eps],
                                 '적정 주가(EPS*ROE)': [self.appropriate_cost_by_eps],
                                 '적정 주가(BPS*ROE*ROE(%))': [self.appropriate_cost_by_bps] }
