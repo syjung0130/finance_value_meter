@@ -9,6 +9,8 @@ from scrap.dart.finance_sheet import FinanceSheetAdapter
 from scrap.krx.stock_code import StockCode
 from scrap.krx.stock_finance_indicator import StockFinanceIndicator
 
+from pandas import Series, DataFrame
+
 '''
 https://stackoverflow.com/questions/58274166/cannot-import-pyqtchart-in-python-3-7
 pyqt5에서 QtChart를 사용하기 위해서는 아래 패키지를 설치해주어야한다.
@@ -40,6 +42,7 @@ class Widget(QWidget):
         self.left_layout = QVBoxLayout()
         self.left_layout.addWidget(self.grp_box)
         self.left_layout.addWidget(self.finance_table_view)
+        self.left_layout.addWidget(self.valuation_table_view)
 
         # Right Layout - # Creating QChartView: 매출액, 순이익, 자산 증가 추세
         self.chart = QtChart.QChart()
@@ -58,7 +61,7 @@ class Widget(QWidget):
         # QWidget Layout
         self.main_layout = QHBoxLayout()
         self.main_layout.addLayout(self.left_layout)
-        self.main_layout.addLayout(self.right_layout)
+        # self.main_layout.addLayout(self.right_layout)
 
         # Set the layout to the QWidget
         self.setLayout(self.main_layout)
@@ -73,8 +76,8 @@ class Widget(QWidget):
     def create_finance_table_model(self):
         # Getting the Model - PER, PBR, EPS, ROE를 table로
         self.indicator = StockFinanceIndicator()
-        dataframe = self.indicator.get_finance_dataframe_by_code("005930")
-        self.finance_table_model = CustomTableModel(dataframe)
+        self.finance_dataframe = self.indicator.get_finance_dataframe_by_code("005930")
+        self.finance_table_model = CustomTableModel(self.finance_dataframe)
     
     def create_finance_table_view(self):
         # Creating a QTableView
@@ -100,10 +103,49 @@ class Widget(QWidget):
 
     def create_valuation_table_model(self):
         print('create_valuation_table_model')
+        # Getting the Model - PER, PBR, EPS, ROE를 table로
+        self.set_valuation_dataframe()
+        self.valuation_table_model = CustomTableModel(self.valuation_dataframe)
 
     def create_valuation_table_view(self):
         print('create_valuation_table_view')
+        # Creating a QTableView
+        self.valuation_table_view = QTableView()
+        self.valuation_table_view.setModel(self.valuation_table_model)
+        self.init_table_headers()
+        self.size.setHorizontalStretch(1)
+        self.valuation_table_view.setSizePolicy(self.size)
     
+    def set_valuation_dataframe(self):
+        self.get_valuation_dictionary_from_finance_dataframe()
+        self.valuation_dataframe = DataFrame(self.dict_valuation, columns=['적정 EPS', '적정 주가(EPS)', '적정 주가(BPS)'])
+        print(self.valuation_dataframe)
+
+    def get_valuation_dictionary_from_finance_dataframe(self):
+        print('get_valuation_dictionary_from_finance_dataframe')
+        # 적정 EPS      : bps * roe
+        # 적정 주가     : eps * roe (== eps * 주식 수)
+        # 적정 시가총액 : 영업이익, 당기순이익 x roe(100), 억 단위
+        # 적정 주가     : bps * roe*roe == eps * roe
+        str_eps = self.finance_dataframe['EPS'].iloc[0]
+        str_eps = str_eps.replace(',', '')
+        str_bps = self.finance_dataframe['BPS'].iloc[0]
+        str_bps = str_bps.replace(',', '')
+        print(type(self.finance_dataframe['ROE'].iloc[0]))
+        str_roe = self.finance_dataframe['ROE'].iloc[0]
+        str_roe = str_roe.replace(',', '')
+        self.eps = float(str_eps)
+        self.bps = float(str_bps)
+        self.roe = float((self.eps /  self.bps) *100)
+        self.appropriate_eps = format(self.bps * self.roe, '3.2f')#str(self.bps * self.roe)
+        self.appropriate_cost_by_eps = format(self.eps * self.roe, '3.2f')#str(self.eps * self.roe)
+        self.appropriate_cost_by_bps = format(self.bps * self.roe * self.roe, '3.2f')#str(self.bps * self.roe * self.roe)
+        self.dict_valuation = { '적정 EPS': [self.appropriate_eps],
+                                '적정 주가(EPS)': [self.appropriate_cost_by_eps],
+                                '적정 주가(BPS)': [self.appropriate_cost_by_bps] }
+        # data_frame['ROE'] = format(roe, '3.2f')
+        
+
     # Greets the user
     def get_code_text(self):
         print("종목 정보 %s" % self.edit_corp_name.text())
@@ -117,8 +159,8 @@ class Widget(QWidget):
             print("stock_code : {}".format(code))
             self.str_code = '%06d'%code
             self.edit_corp_code.setText(self.str_code)
-            dataframe = self.indicator.get_finance_dataframe_by_code(self.str_code)
-            self.finance_table_model.update_data(dataframe)
+            self.finance_dataframe = self.indicator.get_finance_dataframe_by_code(self.str_code)
+            self.finance_table_model.update_data(finance_dataframe)
             
         except ValueError:
             print("invalid corp name: {}".format(self.edit_corp_name.text()))
