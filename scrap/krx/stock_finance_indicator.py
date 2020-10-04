@@ -22,8 +22,12 @@ class StockFinanceIndicator:
         print("PER, PBR, EPS, BPS excel sheet 다운로드")
         # download한 파일이름에 날짜를 붙여서 저장
         # 현재 날짜가 지난 날짜일 경우, 새로 download
-        self.download_path = 'C:/Users/SYJ/Downloads/'#'C:/Users/SYJ/Downloads/data.csv'
+        base_path = 'C:/Users/'
+        self.user_name = os.getlogin()
+        # self.download_path = 'C:/Users/SYJ/Downloads/'#'C:/Users/SYJ/Downloads/data.csv'
+        self.download_path = base_path + self.user_name + '/Downloads/'
         self.download_file_name = 'data.csv'
+        print(self.download_path + self.download_file_name)
 
         # 업데이트하지 않아도 될 경우, download하지 않는다.
         if self.is_excel_file_already_update() == False:
@@ -39,7 +43,8 @@ class StockFinanceIndicator:
         return self.download_path + self.excel_file_name
 
     def open_chrome_driver(self):
-        self.chromedriver_path = "C:/Users/SYJ/Desktop/python/chromedriver"
+        # self.chromedriver_path = "C:/Users/SYJ/Desktop/python/chromedriver"
+        self.chromedriver_path = "./chromedriver"
         self.driver = webdriver.Chrome(self.chromedriver_path)
         self.driver.implicitly_wait(3)
         self.driver.get('http://marketdata.krx.co.kr/mdi#document=13020401')
@@ -52,7 +57,7 @@ class StockFinanceIndicator:
     def do_download_excel(self):
         self.span = self.driver.find_elements_by_css_selector('span.button-mdi-group button')[3]
         self.span.click()
-        time.sleep(3)
+        time.sleep(10)
 
     def insert_date_to_file_name_str(self):
         now = datetime.datetime.now()

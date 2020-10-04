@@ -1,0 +1,8 @@
+## 크롬 버전 확인
+크롬 열고 chrome://version 입력
+
+## chromedriver 다운로드
+아래 url에서 chrome 버전에 일치하는 chromedriver.exe를 다운로드 한다.
+https://sites.google.com/a/chromium.org/chromedriver/downloads
+
+## chromedriver를 프로그램 디렉토리로 복사
