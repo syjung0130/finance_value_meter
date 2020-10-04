@@ -51,7 +51,7 @@ class Widget(QWidget):
         self.chart_view = QtChart.QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.Antialiasing)
 
-        # Right Layout - Add charg widget
+        # Right Layout - Add chart widget
         self.right_layout = QVBoxLayout()
         # size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         # size.setHorizontalStretch(4)
@@ -83,11 +83,9 @@ class Widget(QWidget):
         # Creating a QTableView
         self.finance_table_view = QTableView()
         self.finance_table_view.setModel(self.finance_table_model)
-        self.init_table_headers()
-        self.size.setHorizontalStretch(1)
-        self.finance_table_view.setSizePolicy(self.size)
+        self.init_finance_table_headers()
     
-    def init_table_headers(self):
+    def init_finance_table_headers(self):
         # QTableView Headers
         self.horizontal_header = self.finance_table_view.horizontalHeader()
         self.vertical_header = self.finance_table_view.verticalHeader()
@@ -98,8 +96,25 @@ class Widget(QWidget):
                             QHeaderView.ResizeToContents
         )
         self.horizontal_header.setStretchLastSection(True)
-        self.size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.finance_tbl_view_size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.finance_tbl_view_size.setHorizontalStretch(1)
+        self.finance_table_view.setSizePolicy(self.finance_tbl_view_size)
 
+    def init_valuation_table_headers(self):
+        # QTableView Headers
+        self.horizontal_header = self.valuation_table_view.horizontalHeader()
+        self.vertical_header = self.valuation_table_view.verticalHeader()
+        self.horizontal_header.setSectionResizeMode(
+                            QHeaderView.ResizeToContents
+                            )
+        self.vertical_header.setSectionResizeMode(
+                            QHeaderView.ResizeToContents
+        )
+        self.horizontal_header.setStretchLastSection(True)
+        self.valuation_tbl_view_size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.valuation_tbl_view_size.setHorizontalStretch(1)
+        self.valuation_table_view.setSizePolicy(self.valuation_tbl_view_size)
+    
     def create_valuation_table_model(self):
         print('create_valuation_table_model')
         # Getting the Model - PER, PBR, EPS, ROE를 table로
@@ -111,10 +126,8 @@ class Widget(QWidget):
         # Creating a QTableView
         self.valuation_table_view = QTableView()
         self.valuation_table_view.setModel(self.valuation_table_model)
-        self.init_table_headers()
-        self.size.setHorizontalStretch(1)
-        self.valuation_table_view.setSizePolicy(self.size)
-    
+        self.init_valuation_table_headers()
+
     def set_valuation_dataframe(self):
         self.get_valuation_dictionary_from_finance_dataframe()
         self.valuation_dataframe = DataFrame(self.dict_valuation, columns=['적정 EPS', '적정 주가(EPS)', '적정 주가(BPS)'])
