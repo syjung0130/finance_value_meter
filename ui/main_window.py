@@ -5,7 +5,7 @@ from PyQt5.QtGui import QKeySequence
 class MainWindow(QMainWindow):
     def __init__(self, widget):
         QMainWindow.__init__(self)
-        self.setWindowTitle("재무제표")
+        self.setWindowTitle("개별 종목 재무제표, 적정 EPS/주가 측정")
         self.setCentralWidget(widget)
 
         # Menu
@@ -21,8 +21,8 @@ class MainWindow(QMainWindow):
 
         # Status Bar
         self.status = self.statusBar()
-        self.status.showMessage("Data loaded and plotted")
+        self.status.showMessage("개별 종목 재무제표, 적정 EPS/주가 측정")
 
         # Window dimensions
         geometry = qApp.desktop().availableGeometry(self)
-        self.setFixedSize(geometry.width() * 0.8, geometry.height() * 0.7)
+        self.setFixedSize(geometry.width() * 0.5, geometry.height() * 0.5)
