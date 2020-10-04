@@ -86,7 +86,6 @@ class Widget(QWidget):
         self.init_table_headers()
         self.size.setHorizontalStretch(1)
         self.finance_table_view.setSizePolicy(self.size)
-        # self.main_layout.addWidget(self.finance_table_view)
     
     def init_table_headers(self):
         # QTableView Headers
@@ -143,7 +142,6 @@ class Widget(QWidget):
         self.dict_valuation = { '적정 EPS': [self.appropriate_eps],
                                 '적정 주가(EPS)': [self.appropriate_cost_by_eps],
                                 '적정 주가(BPS)': [self.appropriate_cost_by_bps] }
-        # data_frame['ROE'] = format(roe, '3.2f')
         
 
     # Greets the user
@@ -160,7 +158,9 @@ class Widget(QWidget):
             self.str_code = '%06d'%code
             self.edit_corp_code.setText(self.str_code)
             self.finance_dataframe = self.indicator.get_finance_dataframe_by_code(self.str_code)
-            self.finance_table_model.update_data(finance_dataframe)
+            self.finance_table_model.update_data(self.finance_dataframe)
+            self.set_valuation_dataframe()
+            self.valuation_table_model.update_data(self.valuation_dataframe)
             
         except ValueError:
             print("invalid corp name: {}".format(self.edit_corp_name.text()))
