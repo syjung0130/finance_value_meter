@@ -71,6 +71,8 @@ class Widget(QWidget):
         self.label_stock_code_search = QLabel("종목 코드 조회:")
         self.edit_corp_name = QLineEdit("회사명을 입력하고 엔터를 입력하세요.")
         self.edit_corp_code = QLineEdit("종목 코드:")
+        self.edit_corp_name.setFixedWidth(500)
+        self.edit_corp_code.setFixedWidth(500)
         self.edit_corp_name.returnPressed.connect(self.update_codes)
     
     def create_finance_table_model(self):
@@ -95,10 +97,11 @@ class Widget(QWidget):
         self.vertical_header.setSectionResizeMode(
                             QHeaderView.ResizeToContents
         )
-        self.horizontal_header.setStretchLastSection(True)
+        self.horizontal_header.setStretchLastSection(False)
         self.finance_tbl_view_size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.finance_tbl_view_size.setHorizontalStretch(1)
         self.finance_table_view.setSizePolicy(self.finance_tbl_view_size)
+        self.finance_table_view.resizeColumnsToContents()
 
     def init_valuation_table_headers(self):
         # QTableView Headers
@@ -110,10 +113,11 @@ class Widget(QWidget):
         self.vertical_header.setSectionResizeMode(
                             QHeaderView.ResizeToContents
         )
-        self.horizontal_header.setStretchLastSection(True)
+        self.horizontal_header.setStretchLastSection(False)
         self.valuation_tbl_view_size = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.valuation_tbl_view_size.setHorizontalStretch(1)
         self.valuation_table_view.setSizePolicy(self.valuation_tbl_view_size)
+        self.valuation_table_view.resizeColumnsToContents()
     
     def create_valuation_table_model(self):
         print('create_valuation_table_model')
@@ -130,7 +134,7 @@ class Widget(QWidget):
 
     def set_valuation_dataframe(self):
         self.get_valuation_dictionary_from_finance_dataframe()
-        self.valuation_dataframe = DataFrame(self.dict_valuation, columns=['적정 EPS', '적정 주가(EPS)', '적정 주가(BPS)'])
+        self.valuation_dataframe = DataFrame(self.dict_valuation, columns=['적정 EPS', '적정 주가(EPS*ROE)', '적정 주가(BPS*ROE*ROE(%))'])
         print(self.valuation_dataframe)
 
     def get_valuation_dictionary_from_finance_dataframe(self):
@@ -149,12 +153,12 @@ class Widget(QWidget):
         self.eps = float(str_eps)
         self.bps = float(str_bps)
         self.roe = float((self.eps /  self.bps) *100)
-        self.appropriate_eps = format(self.bps * self.roe, '3.2f')#str(self.bps * self.roe)
-        self.appropriate_cost_by_eps = format(self.eps * self.roe, '3.2f')#str(self.eps * self.roe)
-        self.appropriate_cost_by_bps = format(self.bps * self.roe * self.roe, '3.2f')#str(self.bps * self.roe * self.roe)
+        self.appropriate_eps = format((self.bps * self.roe)/100, '3.2f')#str(self.bps * self.roe)
+        self.appropriate_cost_by_eps = format((self.eps * self.roe), '3.2f')#str(self.eps * self.roe)
+        self.appropriate_cost_by_bps = format((self.bps * self.roe * self.roe)/100, '3.2f')#str(self.bps * self.roe * self.roe)
         self.dict_valuation = { '적정 EPS': [self.appropriate_eps],
-                                '적정 주가(EPS)': [self.appropriate_cost_by_eps],
-                                '적정 주가(BPS)': [self.appropriate_cost_by_bps] }
+                                '적정 주가(EPS*ROE)': [self.appropriate_cost_by_eps],
+                                '적정 주가(BPS*ROE*ROE(%))': [self.appropriate_cost_by_bps] }
         
 
     # Greets the user
