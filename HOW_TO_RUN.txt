@@ -1,3 +1,5 @@
+# 공통
+-----------------------
 ## 크롬 버전 확인
 크롬 열고 chrome://version 입력
 
@@ -6,3 +8,30 @@
 https://sites.google.com/a/chromium.org/chromedriver/downloads
 
 ## chromedriver를 프로그램 디렉토리로 복사
+
+
+
+
+# develop 버전 실행 방법
+-----------------------
+## virtualenv 설치
+pip install virtualenv
+vscode 관리자 권한으로 실행 -> ctrl + ' -> (powershell)
+virtualenv venv
+.\venv\Scripts\activate
+
+## 설치 패키지 목록
+pip install PyQt5
+python -m pip install PyQt5==5.13 PyQtChart==5.13
+pip install pandas
+pip install dart_fss
+pip install selenium
+
+## 실행
+python main.py
+
+
+
+
+# release 버전 실행 방법
+------------------------
