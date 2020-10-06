@@ -22,10 +22,7 @@ class StockFinanceIndicator:
         print("PER, PBR, EPS, BPS excel sheet 다운로드")
         # download한 파일이름에 날짜를 붙여서 저장
         # 현재 날짜가 지난 날짜일 경우, 새로 download
-        base_path = 'C:/Users/'
-        self.user_name = os.getlogin()
-        # self.download_path = 'C:/Users/SYJ/Downloads/'#'C:/Users/SYJ/Downloads/data.csv'
-        self.download_path = base_path + self.user_name + '/Downloads/'
+        self.download_path = os.path.expanduser("~") + '/Downloads/'
         self.download_file_name = 'data.csv'
         print(self.download_path + self.download_file_name)
 
